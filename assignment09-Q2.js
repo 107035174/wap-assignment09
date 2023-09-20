@@ -28,30 +28,23 @@ class Quiz {
     }
 
     scoreStudent(sid) {
-        let score = 0;
-        for (let i = 0; i < this.students.length; i++) {
-            if (this.students[i].studentID === sid) {
-                for (let j = 0; j < this.questions.length; j++) {
-                    for (let k = 0; k < this.students[i].answer.length; k++) {
-                        if (this.students[i].answer[k].qid === this.questions[j].qid) {
-                            if (this.students[i].answer[k].answer === this.questions[j].answer) {
-                                score++;
-                            }
-                        }
-                    }
-                }
+        let student = this.students.find(s => s.studentID === sid);
+        if (!student) return 0;
+        return this.questions.reduce((score, question) => {
+            let matchingAnswer = student.answer.find(a => a.qid === question.qid);
+            if (matchingAnswer && matchingAnswer.answer === question.answer) {
+                return score + 1;
             }
-        }
-        return score;
+            return score;
+        }, 0);
     }
 
     getAverageScore() {
-        let sum = 0;
-        for (let i = 0; i < this.students.length; i++) {
-            sum += this.scoreStudent(this.students[i].studentID);
-        }
-        return sum / this.students.length
+        if (this.students.length === 0) return 0;
+        return this.students.map(student => this.scoreStudent(student.studentID))
+            .reduce((acc, score) => acc + score, 0) / this.students.length;
     }
+
 }
 
 const student1 = new Student(10);
